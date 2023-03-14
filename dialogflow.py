@@ -33,15 +33,15 @@ def processRequest(req):  # This method processes the incoming request
 
     intent = result.get("intent").get('displayName')
 
-    if (intent == 'DataYes'):
-        prediction = 5
-        output = round(prediction[0], 2)
-
-        fulfillmentText = "The Per capita income for this year is:  {} !".format(output)
-
-        return {
-            "fulfillmentText": fulfillmentText
-        }
+    # if (intent == 'DataYes'):
+    #     prediction = model.predict([[year]])
+    #     output = round(prediction[0], 2)
+    #
+    #     fulfillmentText = "The Per capita income for this year is:  {} !".format(output)
+    #
+    #     return {
+    #         "fulfillmentText": fulfillmentText
+    #     }
 
 if __name__ == '__main__':
     forecast_app.run()
