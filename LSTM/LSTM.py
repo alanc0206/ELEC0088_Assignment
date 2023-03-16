@@ -1,109 +1,141 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[2]:
+
+
+import math
+import yfinance as yf
 import numpy as np
 import pandas as pd
-import tensorflow
-import datetime
+from sklearn.preprocessing import MinMaxScaler 
 import matplotlib.pyplot as plt
-from statsmodels.tools.eval_measures import rmse
-from keras.models import Sequential
-from keras.layers import LSTM, Dropout, Dense
-from keras.callbacks import EarlyStopping
-from sklearn import preprocessing
-import os
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-df = pd.read_csv('01_01_18_to_13_03_23.csv')
-df = df[['Date', 'Price']]
-df = df.set_index('Date', drop=True)
-df = df.iloc[::-1]
-df.index = pd.to_datetime(df.index, format="%d/%m/%Y")
-
-# Inference
-test_data = df.tail(365)
-df = df.iloc[:-365]
-
-plt.figure(figsize=(16, 7))
-plt.plot(df.loc['2018-01-02':'2023-03-13', 'Price'],
-         label='Predicted', linestyle='-', c='b')
+stock_data = pd.read_csv('01_01_18_to_13_03_23.csv')
+stock_data = stock_data[['Date', 'Price']]
+stock_data = stock_data.set_index('Date', drop = True)
+stock_data = stock_data.iloc[::-1]
+stock_data.index = pd.to_datetime(stock_data.index, format="%d/%m/%Y")
+stock_data.head()
 
 
-# Prepare data for LSTM model by incoorporating timesteps of 60
-def prepare_data(data):
-    x_train = []
-    y_train = []
-    for i in range(60, len(data)):
-        x_train.append(data[i - 60:i, 0])
-        y_train.append(data[i, 0])
-    x_train = np.array(x_train)
-    y_train = np.array(y_train)
-    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
-
-    return x_train, y_train
+# In[3]:
 
 
-# Build and train LSTM model
-def train_model(x_train, y_train):
-    es = EarlyStopping(monitor='val_loss', min_delta=0, patience=150, mode='auto', baseline=None, verbose=2,
-                        restore_best_weights=True)
-    model = Sequential()
-    n_neurons = x_train.shape[1] * x_train.shape[2]
-    model.add(LSTM(n_neurons, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
-    model.add(LSTM(n_neurons, return_sequences=False))
-    model.add(Dense(5))
-    model.add(Dense(1))
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train, epochs=1000, batch_size=10, validation_split=0.2, callbacks=[es])
-
-    return model
+plt.figure(figsize=(15, 8))
+plt.title('Stock Prices History')
+plt.plot(stock_data['Price'])
+plt.xlabel('Date')
+plt.ylabel('Prices ($)')
 
 
-# Make prediction
-def make_prediction(data, x_test_data):
-    x_train, y_train = prepare_data(data)
-    LSTM_model = train_model(x_train, y_train)
-    forecast = LSTM_model.predict(x_test_data)
-    # forecast = scaler.inverse_transform(forecast)
-    return forecast
+# In[4]:
 
 
-# Plot predictions and actual closing price
-def plot_predictions(total_data, test_data, forecast_data, title):
-    test_data['Prediction'] = forecast_data
-    total_data.index = pd.to_datetime(total_data.index)
-    test_data.index = pd.to_datetime(test_data.index)
-    plt.figure(figsize=(16, 7))
-    plt.plot(total_data.loc['2021-09-29':'2023-03-13', 'Price'],
-             label='Actual', linestyle='-', c='r')
-    plt.plot(test_data.loc['2021-09-29':'2023-03-13', 'Prediction'],
-             label='Predicted', linestyle='-', c='b')
+close_prices = stock_data['Price']
+values = close_prices.values
+training_data_len = math.ceil(len(values)*0.8 )
 
-    plt.xlabel('Date', fontsize='18')
-    plt.ylabel('Stock Price', fontsize='18')
-    plt.title('Stock Prediction ' + title, fontsize='20')
+#scaler = MinMaxScaler(feature_range=(0,1))
+#scaled_data = scaler.fit_transform(values.reshape(-1,1))
 
-    plt.grid()
-    plt.legend()
-    plt.show()
-    plt.savefig('Stock Prediction ' + title + '.png',
-                bbox_inches="tight",
-                pad_inches=0.5,
-                transparent=True,
-                facecolor="w",
-                edgecolor='w',
-                orientation='landscape')
+#train_data = scaled_data[0: training_data_len, :]
+values = values.reshape(-1,1)
+train_data = values[0: training_data_len, :]
+x_train = []
+y_train = []
+
+for i in range(60, len(train_data)):
+    x_train.append(train_data[i-60:i, 0])
+    y_train.append(train_data[i, 0])
+    
+x_train, y_train = np.array(x_train), np.array(y_train)
+
+x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 
-# Prepare test data
-hist_data = pd.DataFrame(df['Price'])
-# hist_data.index = hist_data.index.strftime('%Y-%m-%d')
-dataset_total = pd.concat((hist_data, test_data), axis=0)
-inputs = dataset_total.iloc[len(dataset_total) - len(test_data) - 60:].values
-inputs = inputs.reshape(-1, 1)
-# scaler = preprocessing.MinMaxScaler()
-# inputs = scaler.fit_transform(inputs)
-x_test, y_test = prepare_data(inputs)
+# In[5]:
 
-# LSTM Model
-train = df.values
-forecast = make_prediction(train, x_test)
-plot_predictions(dataset_total, test_data, forecast, 'Prediction')
+
+test_data = values[training_data_len-60: , : ]
+x_test = []
+y_test = values[training_data_len:]
+
+for i in range(60, len(test_data)):
+  x_test.append(test_data[i-60:i, 0])
+
+x_test = np.array(x_test)
+x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+
+# In[ ]:
+
+
+model = keras.Sequential()
+model.add(layers.LSTM(100, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+model.add(layers.LSTM(100, return_sequences=False))
+model.add(layers.Dense(25))
+model.add(layers.Dense(1))
+model.summary()
+
+
+# In[ ]:
+
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.fit(x_train, y_train, batch_size= 10, epochs=20)
+
+
+# In[ ]:
+
+
+predictions = model.predict(x_test)
+#predictions = scaler.inverse_transform(predictions)
+rmse = np.sqrt(np.mean(predictions - y_test)**2)
+rmse
+
+
+# In[ ]:
+
+
+data = stock_data.filter(['Price'])
+train = data[:training_data_len]
+validation = data[training_data_len:]
+validation['Predictions'] = predictions
+plt.figure(figsize=(16,8))
+plt.title('Model')
+plt.xlabel('Date')
+plt.ylabel('Close Price USD ($)')
+#plt.plot(train)
+plt.plot(validation[['Price', 'Predictions']])
+plt.legend(['Val', 'Predictions'], loc='lower right')
+plt.show()
+
+
+# In[ ]:
+
+
+x_test
+plt.plot(x_test)
+
+
+# In[ ]:
+
+
+x_test.shape
+
+
+# In[ ]:
+
+
+predictions
+
+
+# In[ ]:
+
+
+
+
