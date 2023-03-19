@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response
 import json
+from pyngrok import ngrok
 import pickle
 
 
@@ -7,6 +8,9 @@ forecast_app = Flask(__name__)
 
 # Load the trained pickled model here
 #model = pickle.load(open('', 'rb'))
+
+# Open ngrok tunnel
+#http_tunnel = ngrok.connect(5000)
 
 @forecast_app.route('/')
 def hello():
@@ -29,19 +33,17 @@ def processRequest(req):  # This method processes the incoming request
 
     result = req.get("queryResult")
     parameters = result.get("parameters")
-    year = parameters.get("yearinput")
+    date = parameters.get("date")
 
     intent = result.get("intent").get('displayName')
 
-    # if (intent == 'DataYes'):
-    #     prediction = model.predict([[year]])
-    #     output = round(prediction[0], 2)
-    #
-    #     fulfillmentText = "The Per capita income for this year is:  {} !".format(output)
-    #
-    #     return {
-    #         "fulfillmentText": fulfillmentText
-    #     }
+    if (intent == 'DataYes'):
+
+        fulfillmentText = "The temperature on that date is [placeholder]"
+
+        return {
+            "fulfillmentText": fulfillmentText
+        }
 
 if __name__ == '__main__':
     forecast_app.run()
