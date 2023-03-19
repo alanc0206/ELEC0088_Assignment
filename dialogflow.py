@@ -39,7 +39,7 @@ def processRequest(req):  # This method processes the incoming request
 
     if (intent == 'Predict'):
 
-        fulfillmentText = "The temperature on that date is [placeholder]"
+        fulfillmentText = "The temperature on %s is %2.2"
 
         return {
             "fulfillmentText": fulfillmentText
