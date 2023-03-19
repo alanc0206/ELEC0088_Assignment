@@ -37,7 +37,7 @@ def processRequest(req):  # This method processes the incoming request
 
     intent = result.get("intent").get('displayName')
 
-    if (intent == 'DataYes'):
+    if (intent == 'Predict'):
 
         fulfillmentText = "The temperature on that date is [placeholder]"
 
