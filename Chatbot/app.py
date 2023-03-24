@@ -1,9 +1,7 @@
 from flask import Flask, request, make_response
-from datetime import date
 import json
 import pandas as pd
 from pyngrok import ngrok
-import pickle
 
 
 forecast_app = Flask(__name__)
