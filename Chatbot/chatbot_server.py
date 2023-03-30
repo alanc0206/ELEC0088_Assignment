@@ -1,33 +1,32 @@
 import socket
 from _thread import *
 import threading
+from uuid import uuid4
+import dialogflow_api
 
 print_lock = threading.Lock()
 
 # thread function
 def threaded(c):
-    while True:
-        # data received from client
-        data = c.recv(1024)
-        if not data:
-            print('Bye')
-            # lock released on exit
-            print_lock.release()
-            break
 
-        # reverse the given string from client
-        prompt = "Hi this is the server, what is your question?"
+    # data received from client
+    uuid = c.recv(1024)
 
-        # send to client
-        c.send(prompt.encode('ascii'))
+    session_id = uuid.decode('ascii')
 
-        query = c.recv(1024)
+    # reverse the given string from client
+    prompt = dialogflow_api.initiate(session_id)
 
-        print(query.decode('ascii'))
+    # send to client
+    c.send(prompt.encode('ascii'))
 
-        answer = "---DIAGNOSIS HERE---"
+    query = c.recv(1024)
 
-        c.send(answer.encode('ascii'))
+    print(query.decode('ascii'))
+
+    answer = "---DIAGNOSIS HERE---"
+
+    c.send(answer.encode('ascii'))
 
     # connection closed
     c.close()
@@ -38,7 +37,7 @@ def Main():
     # reverse a port on your computer
     # in our case it is 12345 but it
     # can be anything
-    port = 12345
+    port = 1337
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((host, port))
     print("socket binded to post", port)
