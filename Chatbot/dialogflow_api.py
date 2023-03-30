@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 # Define API credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'elec0088-chatbot-frqp-03229f9d3d42.json'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'elec0088-chatbot-frqp-e1e8b6b5eff0.json'
 
 # Define agent parameters
 DIALOGFLOW_PROJECT_ID = 'elec0088-chatbot-frqp'
