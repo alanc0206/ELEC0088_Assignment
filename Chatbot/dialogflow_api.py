@@ -1,11 +1,17 @@
 from google.cloud import dialogflow
 from google.api_core.exceptions import InvalidArgument
+import pandas as pd
 import os
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'elec0088-chatbot-frqp-69ca19fc6944.json'
 
 DIALOGFLOW_PROJECT_ID = 'elec0088-chatbot-frqp'
 DIALOGFLOW_LANGUAGE_CODE = 'en'
+
+df = pd.read_csv('prophet weather forecast.csv')
+df2 = df.drop(df.columns[0], axis=1)
+df2.index = df.ds
+df2 = df2.drop(df2.columns[0], axis=1)
 
 
 class BotApi:
@@ -19,11 +25,16 @@ class BotApi:
         query_input = dialogflow.QueryInput(text=text_input)
         try:
             response = self.session_client.detect_intent(session=self.session, query_input=query_input)
+            if response.query_result.fulfillment_text.startswith('Find information'):
+                date = response.query_result.fulfillment_text.split('date')[1]
+                try:
+                    temps = df2.loc[date]
+                    return "The predicted mean temperature on " + str(date) + " is %.2f" % temps.iloc[0] \
+                        + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
+                        + "\N{DEGREE SIGN}C. Would you like to continue?"
+                except KeyError:
+                    return "That date is invalid or too far away to predict."
         except InvalidArgument:
             return 'Invalid argument'
 
         return response.query_result.fulfillment_text
-
-
-
-
