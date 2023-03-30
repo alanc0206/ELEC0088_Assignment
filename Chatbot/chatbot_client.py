@@ -14,28 +14,22 @@ def Main():
     # message you send to server
     sess_id = uuid1()
     # message sent to server
-    s.send(str(sess_id))
+    s.send(str(sess_id).encode('ascii'))
+    # message received from server
+    data = s.recv(1024)
+    # print the received message
+    # here it would be a reverse of sent message
+    print('Received from Oracle :', str(data.decode('ascii')))
     while True:
-        # message received from server
-        data = s.recv(1024)
-        # print the received message
-        # here it would be a reverse of sent message
-        print('Received from the server :', str(data.decode('ascii')))
 
-        query = input('\nQuestion: ')
+        query = input('\nInput to Oracle: ')
 
         s.send(query.encode('ascii'))
 
         data = s.recv(1024)
 
-        print('Received from the server :', str(data.decode('ascii')))
+        print('\nReceived from Oracle :', str(data.decode('ascii')))
 
-        # ask the client whether he wants to continue
-        ans = input('\nDo you want to continue(y/n) :')
-        if ans == 'y':
-            continue
-        else:
-            break
     # close the connection
     s.close()
 

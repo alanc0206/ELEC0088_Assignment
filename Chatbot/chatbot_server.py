@@ -1,49 +1,54 @@
 import socket
 from _thread import *
 import threading
-from uuid import uuid4
 import dialogflow_api
 
 print_lock = threading.Lock()
 
-# thread function
+# Thread function
 def threaded(c):
 
-    # data received from client
-    uuid = c.recv(1024)
+    try:
+        # Data received from client
+        uuid = c.recv(1024)
 
-    session_id = uuid.decode('ascii')
+        session_id = uuid.decode('ascii')
 
-    # reverse the given string from client
-    prompt = dialogflow_api.initiate(session_id)
+        # Create chatbot API object
+        Chatbot = dialogflow_api.BotApi(session_id)
 
-    # send to client
-    c.send(prompt.encode('ascii'))
+        greet = Chatbot.fulfill("Hi")
 
-    query = c.recv(1024)
+        # Send to client
+        c.send(greet.encode('ascii'))
 
-    print(query.decode('ascii'))
+        while True:
+            query = c.recv(1024)
 
-    answer = "---DIAGNOSIS HERE---"
+            to_bot = query.decode('ascii')
 
-    c.send(answer.encode('ascii'))
+            print(query.decode('ascii'))
 
+            answer = Chatbot.fulfill(to_bot)
+
+            c.send(answer.encode('ascii'))
+    except socket.error as e:
+        print("Socket error " + str(e))
+        print_lock.release()
+        c.close()
     # connection closed
     c.close()
 
 
 def Main():
     host = ""
-    # reverse a port on your computer
-    # in our case it is 12345 but it
-    # can be anything
     port = 1337
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((host, port))
-    print("socket binded to post", port)
+    print("Socket bound to post", port)
     # put the socket into listening mode
     s.listen(5)
-    print("socket is listening")
+    print("Socket is listening")
     # a forever loop until client wants to exit
     while True:
         # establish connection with client
