@@ -8,10 +8,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'elec0088-chatbot-frqp-69ca19fc69
 DIALOGFLOW_PROJECT_ID = 'elec0088-chatbot-frqp'
 DIALOGFLOW_LANGUAGE_CODE = 'en'
 
-df = pd.read_csv('prophet weather forecast.csv')
-df2 = df.drop(df.columns[0], axis=1)
-df2.index = df.ds
-df2 = df2.drop(df2.columns[0], axis=1)
+
 
 
 class BotApi:
@@ -28,13 +25,28 @@ class BotApi:
             if response.query_result.fulfillment_text.startswith('Find information'):
                 date = response.query_result.fulfillment_text.split('date')[1]
                 try:
-                    temps = df2.loc[date]
-                    return "The predicted mean temperature on " + str(date) + " is %.2f" % temps.iloc[0] \
-                        + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
-                        + "\N{DEGREE SIGN}C. Would you like to continue?"
+                    return prophet_predict(date)
                 except KeyError:
                     return "That date is invalid or too far away to predict. Continue?"
         except InvalidArgument:
             return 'Invalid argument'
 
         return response.query_result.fulfillment_text
+
+
+def prophet_predict(date):
+    df = pd.read_csv('prophet weather forecast.csv')
+    df2 = df.drop(df.columns[0], axis=1)
+    df2.index = df.ds
+    df2 = df2.drop(df2.columns[0], axis=1)
+    temps = df2.loc[date]
+    return "The predicted mean temperature on " + str(date) + " is %.2f" % temps.iloc[0] \
+        + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
+        + "\N{DEGREE SIGN}C. Would you like to continue?"
+
+def lstm_predict(date):
+    pass
+
+def arima_predict(date):
+    pass
+
