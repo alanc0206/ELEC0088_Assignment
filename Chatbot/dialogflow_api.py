@@ -3,16 +3,17 @@ from google.api_core.exceptions import InvalidArgument
 import pandas as pd
 import os
 
+# Define API credentials
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'elec0088-chatbot-frqp-69ca19fc6944.json'
 
+# Define agent parameters
 DIALOGFLOW_PROJECT_ID = 'elec0088-chatbot-frqp'
 DIALOGFLOW_LANGUAGE_CODE = 'en'
 
 
-
-
 class BotApi:
 
+    # Constructor that starts a new session
     def __init__(self, session_id):
         self.session_client = dialogflow.SessionsClient()
         self.session = self.session_client.session_path(DIALOGFLOW_PROJECT_ID, session_id)

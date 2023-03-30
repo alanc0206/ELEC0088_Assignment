@@ -9,32 +9,35 @@ print_lock = threading.Lock()
 def threaded(c):
 
     try:
-        # Data received from client
+        # Get uuid from client
         uuid = c.recv(1024)
 
+        # Use uuid as unique session id for API
         session_id = uuid.decode('ascii')
 
         # Create chatbot API object
         Chatbot = dialogflow_api.BotApi(session_id)
 
+        # Initiate a greeting
         greet = Chatbot.fulfill("Hi")
 
-        # Send to client
+        # Send greeting to client
         c.send(greet.encode('ascii'))
 
         while True:
+            # Receive query from client
             query = c.recv(1024)
 
             to_bot = query.decode('ascii')
 
             print(query.decode('ascii'))
 
+            # Get fulfillment from dialogflow agent
             answer = Chatbot.fulfill(to_bot)
-
-            print(answer)
 
             c.send(answer.encode())
     except socket.error as e:
+        # Catch socket exceptions
         print("Socket error " + str(e))
         print_lock.release()
         c.close()
@@ -45,7 +48,9 @@ def threaded(c):
 def Main():
     host = ""
     port = 1337
+    # Create socket object
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Bind socket into localhost:port
     s.bind((host, port))
     print("Socket bound to post", port)
     # put the socket into listening mode
