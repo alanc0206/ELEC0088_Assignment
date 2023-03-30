@@ -33,7 +33,7 @@ class BotApi:
                         + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
                         + "\N{DEGREE SIGN}C. Would you like to continue?"
                 except KeyError:
-                    return "That date is invalid or too far away to predict."
+                    return "That date is invalid or too far away to predict. Continue?"
         except InvalidArgument:
             return 'Invalid argument'
 

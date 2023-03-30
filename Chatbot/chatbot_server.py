@@ -31,7 +31,9 @@ def threaded(c):
 
             answer = Chatbot.fulfill(to_bot)
 
-            c.send(answer.encode('ascii'))
+            print(answer)
+
+            c.send(answer.encode())
     except socket.error as e:
         print("Socket error " + str(e))
         print_lock.release()
