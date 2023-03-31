@@ -15,11 +15,11 @@ def threaded(c):
         # Use uuid as unique session id for API
         session_id = uuid.decode('ascii')
 
-        # Create chatbot API object
-        Chatbot = dialogflow_api.BotApi(session_id)
+        # Create Oracle API object
+        Oracle = dialogflow_api.BotApi(session_id)
 
         # Initiate a greeting
-        greet = Chatbot.fulfill("Hi")
+        greet = Oracle.fulfill("Hi")
 
         # Send greeting to client
         c.send(greet.encode('ascii'))
@@ -33,7 +33,7 @@ def threaded(c):
             print(query.decode('ascii'))
 
             # Get fulfillment from dialogflow agent
-            answer = Chatbot.fulfill(to_bot)
+            answer = Oracle.fulfill(to_bot)
 
             c.send(answer.encode())
     except socket.error as e:
