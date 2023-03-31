@@ -1,6 +1,8 @@
 from google.cloud import dialogflow_v2 as dialogflow
 from google.api_core.exceptions import InvalidArgument
 import pandas as pd
+import numpy as np
+from tensorflow import keras
 import os
 
 # Define API credentials
@@ -54,7 +56,18 @@ def prophet_predict(date):
         + "\N{DEGREE SIGN}C. Would you like to continue?"
 
 def lstm_predict(date):
-    pass
+    model = keras.models.load_model("lstm_model")
+    n_future = date - y_test[-1]
+    for i in range(n_future):
+        # feed the last forecast back to the model as an input
+        x_pred = np.append(x_pred[:, 1:, :], y_pred.reshape(1, 1, 9), axis=1)
+
+        # generate the next forecast
+        y_pred = model.predict(x_pred)
+
+        # save the forecast
+        y_future.append(y_pred)
+    return "The mean temperature on " + str(date) + " is %.2f" % y_future[-1] + "\N{DEGREE SIGN}C."
 
 def arima_predict(date):
     pass
