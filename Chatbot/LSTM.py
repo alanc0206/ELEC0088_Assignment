@@ -14,10 +14,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['HSA_OVERRIDE_GFX_VERSION'] = '10.3.0'
 os.environ['LD_LIBRARY_PATH'] = '$LD_LIBRARY_PATH:/opt/rocm-5.3.0/lib'
 
-weather_data = pd.read_csv('../LSTM/london_weather.csv')
-# weather_data = weather_data[['date', 'mean_temp']]
-weather_data = weather_data.set_index('date', drop=True)
-weather_data.index = pd.to_datetime(weather_data.index, format="%Y%m%d")
+weather_data = pd.read_csv('london_weather.csv')
+weather_data = weather_data[['date', 'max_temp', 'mean_temp', 'min_temp']]
+weather_data = weather_data.set_index('date', drop = True)
+weather_data.index = pd.to_datetime(weather_data.index,format="%Y%m%d")
 weather_data = weather_data.fillna(method='ffill')
 weather_data.iloc[60]
 
@@ -56,12 +56,12 @@ model = keras.Sequential()
 model.add(layers.LSTM(100, return_sequences=True, input_shape=(x_train.shape[1], x_train.shape[2])))
 model.add(layers.LSTM(100, return_sequences=False))
 model.add(layers.Dense(25))
-model.add(layers.Dense(9))
+model.add(layers.Dense(3))
 model.summary()
 # %% raw
 model.compile(optimizer='adam', loss='mean_squared_error')
-early_stopper = keras.callbacks.EarlyStopping(monitor='loss', min_delta=0, patience=3, verbose=1, mode='min')
-model.fit(x_train, y_train, batch_size=10, epochs=10, callbacks=early_stopper)
+#early_stopper = keras.callbacks.EarlyStopping(monitor='loss', min_delta=0, patience=3, verbose=1, mode='min')
+model.fit(x_train, y_train, batch_size=20, epochs=10)
 # %% raw
 predictions = model.predict(x_test)
 # predictions = scaler.inverse_transform(predictions)
@@ -74,9 +74,7 @@ predictions = scaler.inverse_transform(predictions)
 data = weather_data
 train = data[:training_data_len]
 validation = data[training_data_len:]
-df = pd.DataFrame(predictions, columns=['Pred_cloud_cover', 'Pred_sunshine', 'Pred_global_radiation', 'Pred_max_temp',
-                                        'Pred_mean_temp', 'Pred_min_temp', 'Pred_precipitation', 'Pred_pressure',
-                                        'Pred_snow_depth'])
+df = pd.DataFrame(predictions, columns=['Pred_max_temp', 'Pred_mean_temp', 'Pred_min_temp'])
 df.index = validation.index
 validation = pd.concat([validation, df], axis=1)
 plt.figure(figsize=(16, 8))
@@ -89,7 +87,7 @@ plt.legend(['Val', 'Predictions'], loc='lower right')
 plt.show()
 # %% raw
 # generate the multi-step forecasts
-n_future = 365
+n_future = 1825
 y_future = []
 
 x_pred = x_test[-1:, :, :]  # last observed input sequence
@@ -97,7 +95,7 @@ y_pred = y_test[-1]  # last observed target value
 
 for i in range(n_future):
     # feed the last forecast back to the model as an input
-    x_pred = np.append(x_pred[:, 1:, :], y_pred.reshape(1, 1, 9), axis=1)
+    x_pred = np.append(x_pred[:, 1:, :], y_pred.reshape(1, 1, 3), axis=1)
 
     # generate the next forecast
     y_pred = model.predict(x_pred)
@@ -106,14 +104,13 @@ for i in range(n_future):
     y_future.append(y_pred)
 
 # transform the forecasts back to the original scale
-y_future = np.array(y_future).reshape(-1, 9)
+y_future = np.array(y_future).reshape(-1, 3)
 y_future = scaler.inverse_transform(y_future)
 # %% raw
 # df_future['Forecast'] = y_future.flatten()
 df_future = pd.DataFrame(y_future,
-                         columns=['Pred_cloud_cover', 'Pred_sunshine', 'Pred_global_radiation', 'Pred_max_temp',
-                                  'Pred_mean_temp', 'Pred_min_temp', 'Pred_precipitation', 'Pred_pressure',
-                                  'Pred_snow_depth'])
+                         columns=['Pred_max_temp',
+                                  'Pred_mean_temp', 'Pred_min_temp'])
 df_future['Date'] = pd.date_range(start='2020-12-31', periods=n_future)
 df_future = df_future.set_index('Date')
 
