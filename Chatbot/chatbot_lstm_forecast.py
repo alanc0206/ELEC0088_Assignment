@@ -96,8 +96,8 @@ def forecast(date):
 
     # Return information to Oracle chatbot
     return "The predicted mean temperature on " + str(date) + " (YYYY-MM-DD) is %.2f" % df_future['Pred_mean_temp'].iloc[-1] \
-        + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (
-                    df_future['Pred_max_temp'].iloc[-1] - df_future['Pred_min_temp'].iloc[-1]) \
+        + "\N{DEGREE SIGN}C with a maximum temperature of %.2f" % df_future['Pred_max_temp'].iloc[-1] + \
+        "\N{DEGREE SIGN}C and a minimum temperature of %.2f" % df_future['Pred_min_temp'].iloc[-1] \
         + "\N{DEGREE SIGN}C. Would you like to continue?"
 
 
