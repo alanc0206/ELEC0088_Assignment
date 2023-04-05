@@ -62,7 +62,8 @@ model.compile(optimizer='adam', loss='mse')
 model.fit(x_train, y_train, batch_size=128, epochs=6)
 
 predictions = model.predict(x_test)
-rmse = np.sqrt(np.mean(predictions - y_test) ** 2)
+rmse = np.sqrt(np.mean(predictions - y_test)**2)
+print(rmse)
 
 predictions = scaler.inverse_transform(predictions)
 
