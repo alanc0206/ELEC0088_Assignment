@@ -40,6 +40,9 @@ class BotApi:
                 except KeyError:
                     # Catch exception if date is invalid
                     return "That date is invalid or too far away to predict. Continue?"
+                except ValueError:
+                    # Catch exception if date is invalid
+                    return "That that is invalid. Please enter a date after 2020-12-31. Continue?"
         except InvalidArgument:
             return 'Invalid argument'
 

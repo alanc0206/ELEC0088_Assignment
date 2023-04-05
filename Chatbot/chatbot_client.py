@@ -27,6 +27,12 @@ def Main():
         s.send(query.encode('ascii'))
         # Receive fulfillment from server
         data = s.recv(1024)
+        # Detect empty transmission
+        if not data:
+            print("Server disconnected, closing connection.")
+            # close connection
+            s.close()
+            quit()
         # Decode and print fulfillment
         print('\nReceived from Oracle :', str(data.decode()))
 
