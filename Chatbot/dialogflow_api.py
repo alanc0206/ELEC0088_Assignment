@@ -59,7 +59,7 @@ def prophet_predict(date):
     df2 = df2.drop(df2.columns[0], axis=1)
     temps = df2.loc[date]
     # Return predicted values from csv file
-    return "The predicted mean temperature on " + str(date) + " is %.2f" % temps.iloc[0] \
+    return "The predicted mean temperature on " + str(date) + " (YYYY-MM-DD) is %.2f" % temps.iloc[0] \
         + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
         + "\N{DEGREE SIGN}C. Would you like to continue?"
 

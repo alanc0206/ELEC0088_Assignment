@@ -5,7 +5,8 @@ from uuid import uuid1
 
 
 def Main():
-    # local host IP ’127.0.0.1’
+    # Enter the server IP address and port
+    # local host IP is ’127.0.0.1’
     host = '127.0.0.1'
     port = 1337
     # create socket object
