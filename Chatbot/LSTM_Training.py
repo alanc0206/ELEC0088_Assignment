@@ -21,7 +21,6 @@ weather_data = weather_data.set_index('date', drop = True)
 weather_data.index = pd.to_datetime(weather_data.index,format="%Y%m%d")
 # Interpolate NaN values
 weather_data = weather_data.interpolate(method='time')
-weather_data = weather_data[:-359]
 
 # Convert to values from df
 values = weather_data.values
@@ -115,7 +114,7 @@ y_future = np.array(y_future).reshape(-1, 5)
 y_future = scaler.inverse_transform(y_future)
 
 df_future = pd.DataFrame(y_future, columns = ['Pred_mean_temp','Pred_sunshine','Pred_global_radiation','Pred_max_temp','Pred_min_temp'])
-df_future['Date'] = pd.date_range(start='2019-12-31', periods=n_future)
+df_future['Date'] = pd.date_range(start='2020-12-31', periods=n_future)
 df_future = df_future.set_index('Date')
 
 # Plot mean temperature forecast

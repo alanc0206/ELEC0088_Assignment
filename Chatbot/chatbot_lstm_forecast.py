@@ -20,7 +20,6 @@ weather_data = weather_data.set_index('date', drop=True)
 weather_data.index = pd.to_datetime(weather_data.index, format="%Y%m%d")
 # Interpolate NaN values in dataset
 weather_data = weather_data.interpolate(method='time')
-weather_data = weather_data[:-359]
 values = weather_data.values
 # Define train-test split
 training_data_len = math.ceil(len(values) * 0.8)
@@ -55,7 +54,7 @@ predictions = scaler.inverse_transform(predictions)
 # Generate the multi-step forecasts
 def forecast(date):
     current_date = datetime.datetime.strptime(date, "%Y-%m-%d").date()  # Convert date string to date object
-    last_date = datetime.date(2019, 12, 31)  # Last observed date in the dataset
+    last_date = datetime.date(2020, 12, 31)  # Last observed date in the dataset
     delta = current_date - last_date
     n_future = delta.days  # Difference of days in dates
 
@@ -81,7 +80,7 @@ def forecast(date):
     df_future = pd.DataFrame(y_future,
                              columns=['Pred_mean_temp', 'Pred_sunshine', 'Pred_global_radiation', 'Pred_max_temp',
                                       'Pred_min_temp'])
-    df_future['Date'] = pd.date_range(start='2019-12-31', periods=n_future)
+    df_future['Date'] = pd.date_range(start='2020-12-31', periods=n_future)
     df_future = df_future.set_index('Date')
 
     # # For testing purposes only (Uncomment to test)
