@@ -10,6 +10,7 @@ This project was developed on Python 3.10.9 using the following packages their s
 - Scikit-learn 1.2.0
 - Scipy 1.8.1
 - google-api-core 1.34.0
+- google-cloud-dialogflow 2.21.0
 - matplotlib 3.6.2
 - pmdarima 1.8.5
 - statsmodels 0.13.5
