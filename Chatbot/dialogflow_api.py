@@ -4,7 +4,7 @@
 from google.cloud import dialogflow_v2 as dialogflow
 from google.api_core.exceptions import InvalidArgument
 import pandas as pd
-import chatbot_lstm_forecast
+import chatbot_lstm_forecast as lstm
 import os
 
 # Define API credentials
@@ -36,7 +36,7 @@ class BotApi:
                 date = response.query_result.fulfillment_text.split('date')[1]
                 try:
                     # Call prediction method (lstm or prophet)
-                    return chatbot_lstm_forecast.forecast(date)
+                    return lstm.forecast(date)
                 except KeyError:
                     # Catch exception if date is invalid
                     return "That date is invalid or too far away to predict. Continue?"
@@ -47,12 +47,15 @@ class BotApi:
         return response.query_result.fulfillment_text
 
 
+# Function for prophet prediction
 def prophet_predict(date):
+    # Load predicted prophet values from csv file
     df = pd.read_csv('prophet weather forecast.csv')
     df2 = df.drop(df.columns[0], axis=1)
     df2.index = df.ds
     df2 = df2.drop(df2.columns[0], axis=1)
     temps = df2.loc[date]
+    # Return predicted values from csv file
     return "The predicted mean temperature on " + str(date) + " is %.2f" % temps.iloc[0] \
         + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
         + "\N{DEGREE SIGN}C. Would you like to continue?"
