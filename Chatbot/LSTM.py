@@ -1,4 +1,3 @@
-# %% raw
 import math
 import yfinance as yf
 import numpy as np
@@ -8,8 +7,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-
-
+from scipy import signal
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -26,11 +24,16 @@ weather_data = weather_data[:-359]
 values = weather_data.values
 training_data_len = math.ceil(len(values) * 0.8)
 
-scaler = MinMaxScaler(feature_range=(0, 1))
-scaled_data = scaler.fit_transform(values)
+b, a = signal.iirfilter(4, 0.03, btype="low", ftype="butter")
+print(b, a, sep="\n")
+values_filt = [None] * 5
+for i in range(5):
+    values_filt[i] = signal.filtfilt(b, a , values[:,i])
+values_filt = np.array(values_filt).transpose()
 
-# train_data = scaled_data[0: training_data_len, :]
-# values = values.reshape(-1,1)
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_data = scaler.fit_transform(values_filt)
+
 train_data = scaled_data[0: training_data_len, :]
 x_train = []
 y_train = []
@@ -81,11 +84,11 @@ plt.xlabel('Date')
 plt.ylabel('mean_temp')
 # plt.plot(train)
 plt.plot(validation[['mean_temp', 'Pred_mean_temp']])
-plt.legend(['Val', 'Predictions'], loc='lower right')
+plt.legend(['Mean Temperature', 'Predictions'], loc='lower right')
 plt.show()
 # %% raw
 # generate the multi-step forecasts
-n_future = 365*4
+n_future = 365*2
 y_future = []
 
 x_pred = x_test[-1:, :, :]  # last observed input sequence
