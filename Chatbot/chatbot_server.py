@@ -1,3 +1,5 @@
+## Run this script on a server machine to start the Oracle chatbot service. ##
+# Import modules
 import socket
 from _thread import *
 import threading

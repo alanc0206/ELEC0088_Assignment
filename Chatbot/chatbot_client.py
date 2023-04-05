@@ -1,3 +1,4 @@
+## Run this script to connect a client to the Oracle server. ##
 # Import socket module
 import socket
 from uuid import uuid1

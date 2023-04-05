@@ -1,7 +1,9 @@
+## This application module acts as a Google cloud API client for the Dialogflow agent,
+## and calls prediction functions using relevant forecasting models.
+# Import modules
 from google.cloud import dialogflow_v2 as dialogflow
 from google.api_core.exceptions import InvalidArgument
 import pandas as pd
-import numpy as np
 import chatbot_lstm_forecast
 import os
 
@@ -55,7 +57,5 @@ def prophet_predict(date):
         + "\N{DEGREE SIGN}C with a variation of \u00B1%.2f" % (temps.iloc[2] - temps.iloc[1]) \
         + "\N{DEGREE SIGN}C. Would you like to continue?"
 
-def lstm_predict(date):
-    pass
 
 
