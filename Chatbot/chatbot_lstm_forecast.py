@@ -84,6 +84,7 @@ def forecast(date):
     df_future = df_future.set_index('Date')
 
     # # For testing purposes only (Uncomment to test)
+    # # Plot forecast
     # import matplotlib.pyplot as plt
     #
     # plt.figure(figsize=(16, 8))
@@ -102,4 +103,5 @@ def forecast(date):
 
 
 # # For testing purposes only (Uncomment to test)
+# # Calls forecast function
 # forecast('2023-01-15')
