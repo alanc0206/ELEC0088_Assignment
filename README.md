@@ -17,7 +17,7 @@ This project was developed on Python 3.10.9 using the following packages their s
 - numpy 1.22.4
 - prophet 1.1.2
 
-Using other versions of the same packages may result in incompatibilities or errors.
+Using other versions of these packages may result in incompatibilities or errors.
 
 ## Datasets
 Our models are built for the 'London Weather Data' dataset assembled by Emmanuel F. Werr (https://www.kaggle.com/datasets/emmanuelfwerr/london-weather-data) from data provided by the European Climate Assessment (ECA) (https://www.ecad.eu/dailydata/index.php). Measurements for this dataset were collected by the Heathrow weather station in London.
