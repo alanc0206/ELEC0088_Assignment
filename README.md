@@ -38,5 +38,5 @@ Directory containing files to train and validate ARIMA models. ARIMA_multi.ipynb
 
 ### Prophet directory
 
-Directory to train and show the results of FBProphet models. Besides our weather dataset, we also tested the prophet model on property prices and stock prices. 
+Directory to train and show the results of FBProphet models. model_multi_prophet_weather_cross_validation.ipynb trains and validates our prophet model on our dataset. Forecasting results are also shown in the notebook and saved to a csv format.
 
