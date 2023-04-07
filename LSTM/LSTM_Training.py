@@ -15,7 +15,7 @@ os.environ['HSA_OVERRIDE_GFX_VERSION'] = '10.3.0'
 os.environ['LD_LIBRARY_PATH'] = '$LD_LIBRARY_PATH:/opt/rocm-5.3.0/lib'
 
 # Load dataset
-weather_data = pd.read_csv('london_weather.csv')
+weather_data = pd.read_csv('../Chatbot/london_weather.csv')
 weather_data = weather_data[['date', 'mean_temp', 'sunshine','global_radiation','max_temp','min_temp']]
 weather_data = weather_data.set_index('date', drop = True)
 weather_data.index = pd.to_datetime(weather_data.index,format="%Y%m%d")

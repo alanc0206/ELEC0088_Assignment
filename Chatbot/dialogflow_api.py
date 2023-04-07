@@ -1,4 +1,4 @@
-## This application module acts as a Google cloud API client for the Dialogflow agent,
+## This application module acts as a Google cloud API client for the Dialogflow agent
 ## and calls prediction functions using relevant forecasting models.
 # Import modules
 from google.cloud import dialogflow_v2 as dialogflow
